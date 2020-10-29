@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -27,6 +29,22 @@ const fileName = "flights.json"
 var lastInsertId int
 var s []Flight
 
+var clear map[string]func() //create a map for storing clear funcs
+
+func init() {
+	clear = make(map[string]func()) //Initialize it
+	clear["linux"] = func() {
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
+
 func getNewId() int {
 	lastInsertId++
 	return lastInsertId
@@ -38,8 +56,13 @@ func check(e error) {
 	}
 }
 
-func clear() {
-	os.Stdout.WriteString("\x1b[3;J\x1b[H\x1b[2J")
+func clearConsole() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
 }
 
 func BinarySearch(fs []Flight, id int) int {
@@ -130,15 +153,15 @@ func showCreateFlight() {
 	var f Flight
 	fmt.Println("Ingresa el nombre del vuelo que quieras crear")
 	input := getKeysPressed()
-	clear()
+	clearConsole()
 	f.Nombre = input
 	fmt.Println("Ingresa la fecha de salida")
 	input = getKeysPressed()
-	clear()
+	clearConsole()
 	f.FechaInicio = input
 	fmt.Println("Ingresa la fecha de llegada")
 	input = getKeysPressed()
-	clear()
+	clearConsole()
 	f.FechaFin = input
 
 	createFlight(f)
@@ -161,7 +184,7 @@ func showFlights() {
 func showFlight() {
 	fmt.Println("Ingresa el id del vuelo que quieras ver")
 	input := getIdInput()
-	clear()
+	clearConsole()
 	if input == -1 {
 		return
 	}
@@ -184,7 +207,7 @@ func idNotFound(id int) {
 
 func getIdInput() int {
 	input, err := strconv.Atoi(getKeysPressed())
-	clear()
+	clearConsole()
 	if err != nil {
 		fmt.Println("Tenes que ingresar un numero.")
 		enterToContinue()
@@ -203,7 +226,7 @@ func getIdInput() int {
 func showDeleteFlight() {
 	fmt.Println("Ingresa el id del vuelo que quieras borrar.")
 	input := getIdInput()
-	clear()
+	clearConsole()
 	if input == -1 {
 		return
 	}
@@ -222,7 +245,7 @@ func showDeleteFlight() {
 func showUpdateFlight() {
 	fmt.Println("Ingresa el id del vuelo que quieras modificar.")
 	input := getIdInput()
-	clear()
+	clearConsole()
 	if input == -1 {
 		return
 	}
@@ -233,17 +256,17 @@ func showUpdateFlight() {
 		f.print()
 		fmt.Println("Ingresa el nuevo nombre")
 		input := getKeysPressed()
-		clear()
+		clearConsole()
 		f.Nombre = input
 		f.print()
 		fmt.Println("Ingresa la nueva fecha de salida")
 		input = getKeysPressed()
-		clear()
+		clearConsole()
 		f.FechaInicio = input
 		f.print()
 		fmt.Println("Ingresa la nueva fecha de llegada")
 		input = getKeysPressed()
-		clear()
+		clearConsole()
 		f.FechaFin = input
 
 		updateFlight(f)
@@ -280,10 +303,10 @@ func main() {
 
 	exit := false
 	for !exit {
-		clear()
+		clearConsole()
 		showMenu()
 		key := strings.ToUpper(getKeysPressed())
-		clear()
+		clearConsole()
 
 		switch key {
 		case "1":
