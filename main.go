@@ -24,7 +24,7 @@ func (f *Flight) print() {
 	fmt.Printf("id=%v, nombre=%v, inicio=%v, fin=%v\n", f.Id, f.Nombre, f.FechaInicio, f.FechaFin)
 }
 
-const fileName = "flights.json"
+var fileName string = "flights.json"
 
 var lastInsertId int
 var s []Flight

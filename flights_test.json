@@ -1,0 +1,26 @@
+[
+    {
+        "id":1,
+        "nombre":"flight name",
+        "fechaInicio":"2020/02/11 14:04",
+        "fechaFin":"2020/02/11 19:04"
+    },
+    {
+        "id":2,
+        "nombre":"flight name",
+        "fechaInicio":"2020/02/11 14:04",
+        "fechaFin":"2020/02/11 19:04"
+    },
+    {
+        "id":3,
+        "nombre":"flight name",
+        "fechaInicio":"2020/02/11 14:04",
+        "fechaFin":"2020/02/11 19:04"
+    },
+    {
+        "id":4,
+        "nombre":"flight name",
+        "fechaInicio":"2020/02/11 14:04",
+        "fechaFin":"2020/02/11 19:04"
+    }
+]
