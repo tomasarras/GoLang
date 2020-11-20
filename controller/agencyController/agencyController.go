@@ -30,6 +30,7 @@ func SaveAgencyHandler(w http.ResponseWriter, r *http.Request, params map[string
 	}
 
 	response, _ := serviceAgency.Save(a)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -76,6 +77,13 @@ func UpdateAgencyHandler(w http.ResponseWriter, r *http.Request, params map[stri
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	ag, _ := serviceAgency.FindByID(id)
+	if ag.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	a.ID = int64(id)
 	serviceAgency.Update(a)
 	json.NewEncoder(w).Encode(a)
@@ -90,6 +98,10 @@ func RemoveAgencyHandler(w http.ResponseWriter, r *http.Request, params map[stri
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	serviceAgency.Remove(id)
-	w.WriteHeader(http.StatusOK)
+	err = serviceAgency.Remove(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
 }

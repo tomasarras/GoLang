@@ -146,19 +146,6 @@ func (s service) Remove(ID int) error {
 }
 
 func (s service) Update(f entity.Flight) (entity.Flight, error) {
-	result, err := s.db.Exec("UPDATE flight SET name = ?, start = ?, end = ?, aircraft = ?, id_agency = ? WHERE id_flight = ?", f.Name, f.Start, f.End, f.Aircraft, f.IdAgency, f.ID)
-	if err != nil {
-		return entity.Flight{}, err
-	}
-
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return entity.Flight{}, err
-	}
-
-	if rows > 0 {
-		return f, nil
-	} else {
-		return entity.Flight{}, err
-	}
+	_, err := s.db.Exec("UPDATE flight SET name = ?, start = ?, end = ?, aircraft = ?, id_agency = ? WHERE id_flight = ?", f.Name, f.Start, f.End, f.Aircraft, f.IdAgency, f.ID)
+	return f, err
 }

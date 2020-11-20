@@ -3,7 +3,6 @@ package agencyService
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/tomasarras/GoLang/entity"
@@ -48,7 +47,6 @@ func (s service) Save(a entity.Agency) (entity.Agency, error) {
 
 func (s service) FindByID(ID int) (entity.Agency, error) {
 	rows, err := s.db.Query("SELECT * FROM agency WHERE id_agency = ?", ID)
-	fmt.Println(rows)
 	if err != nil {
 		return entity.Agency{}, err
 	}
@@ -111,7 +109,6 @@ func (s service) Remove(ID int) error {
 
 func (s service) Update(a entity.Agency) (entity.Agency, error) {
 	result, err := s.db.Exec("UPDATE agency SET name = ? WHERE id_agency = ?", a.Name, a.ID)
-	//result, err := productModel.Db.Exec("UPDATE agency SET name = ?, price = ?, quantity = ?, status = ? where id = ?", product.Name, product.Price, product.Quantity, product.Status, product.Id)
 	if err != nil {
 		return entity.Agency{}, err
 	}
@@ -124,6 +121,6 @@ func (s service) Update(a entity.Agency) (entity.Agency, error) {
 	if rows > 0 {
 		return a, nil
 	} else {
-		return entity.Agency{}, err
+		return entity.Agency{}, errors.New("can not update the agency")
 	}
 }

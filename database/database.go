@@ -47,7 +47,8 @@ func createSchemaIfNotExists(db *sql.DB) {
 		id_agency int NOT NULL,
 		CONSTRAINT PK_FLIGHT PRIMARY KEY (id_flight),
 		FOREIGN KEY FK_FLIGHT_AGENCY (id_agency)
-    	REFERENCES agency (id_agency)
+		REFERENCES agency (id_agency)
+		ON DELETE CASCADE
 	);`
 
 	// execute a query on the server

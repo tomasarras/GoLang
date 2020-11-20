@@ -7,13 +7,16 @@ import (
 	"strconv"
 
 	"github.com/tomasarras/GoLang/entity"
+	"github.com/tomasarras/GoLang/service/agencyService"
 	"github.com/tomasarras/GoLang/service/flightService"
 )
 
 var serviceFlight flightService.ServiceFlight
+var serviceAgency agencyService.ServiceAgency
 
 func Start(db *sql.DB) {
 	serviceFlight, _ = flightService.New(db)
+	serviceAgency, _ = agencyService.New(db)
 }
 
 func SaveFlightHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -27,6 +30,12 @@ func SaveFlightHandler(w http.ResponseWriter, r *http.Request, params map[string
 		return
 	}
 
+	a, _ := serviceAgency.FindByID(id)
+	if a.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	var f entity.Flight
 	_ = json.NewDecoder(r.Body).Decode(&f)
 
@@ -37,6 +46,7 @@ func SaveFlightHandler(w http.ResponseWriter, r *http.Request, params map[string
 
 	f.IdAgency = int64(id)
 	response, _ := serviceFlight.Save(f)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -51,13 +61,13 @@ func FindByIdFlightHandler(w http.ResponseWriter, r *http.Request, params map[st
 		return
 	}
 
-	a, _ := serviceFlight.FindByID(id)
-	if a.ID == 0 {
+	f, _ := serviceFlight.FindByID(id)
+	if f.ID == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	json.NewEncoder(w).Encode(a)
+	json.NewEncoder(w).Encode(f)
 }
 
 func FindAllFlightHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -72,6 +82,12 @@ func FindAllFlightByAgencyHandler(w http.ResponseWriter, r *http.Request, params
 	itsId := err == nil
 	if !itsId {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	a, _ := serviceAgency.FindByID(id)
+	if a.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -96,7 +112,14 @@ func UpdateFlightHandler(w http.ResponseWriter, r *http.Request, params map[stri
 		return
 	}
 
+	fl, _ := serviceFlight.FindByID(id)
+	if fl.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	f.ID = int64(id)
+
 	response, _ := serviceFlight.Update(f)
 	if response.ID == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -121,6 +144,6 @@ func RemoveFlightHandler(w http.ResponseWriter, r *http.Request, params map[stri
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
