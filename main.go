@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/tomasarras/GoLang/controller/agencyController"
+	"github.com/tomasarras/GoLang/controller/flightController"
 	"github.com/tomasarras/GoLang/database"
 	"github.com/tomasarras/GoLang/router"
 
@@ -12,7 +13,8 @@ func main() {
 	db := database.StartConn()
 	defer db.Close()
 
-	router.Start()
 	agencyController.Start(db)
+	flightController.Start(db)
+	router.Start()
 
 }

@@ -1,6 +1,8 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 func StartConn() *sql.DB {
 	db, err := sql.Open("mysql", "root:password@/flights")
@@ -8,12 +10,28 @@ func StartConn() *sql.DB {
 		panic(err.Error())
 	}
 
+	//createDatabaseIfNotExist(db)
 	createSchemaIfNotExists(db)
-
 	return db
 }
 
-func createSchemaIfNotExists(db *sql.DB) error {
+func createDatabaseIfNotExist(db *sql.DB) {
+	s := "CREATE DATABASE IF NOT EXISTS flights;"
+	_, err := db.Exec(s)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s = "USE flights;"
+	_, err = db.Exec(s)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	createSchemaIfNotExists(db)
+}
+
+func createSchemaIfNotExists(db *sql.DB) {
 	schemaAgency := `CREATE TABLE IF NOT EXISTS agency (
 		id_agency int NOT NULL AUTO_INCREMENT,
 		name varchar(50) NOT NULL,
@@ -36,9 +54,11 @@ func createSchemaIfNotExists(db *sql.DB) error {
 	_, err := db.Exec(schemaAgency)
 
 	if err != nil {
-		return err
+		panic(err.Error())
 	}
 
 	_, err = db.Exec(schemaFlight)
-	return err
+	if err != nil {
+		panic(err.Error())
+	}
 }
